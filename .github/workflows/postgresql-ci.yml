@@ -46,6 +46,7 @@ jobs:
           docker version
 
       - name: Tester le rôle PostgreSQL
-        working-directory: roles/postgresql
         run: |
-          ../../../.venv/bin/molecule test
+          source .venv/bin/activate
+          cd roles/postgresql
+          molecule test     
