@@ -1,0 +1,51 @@
+---
+name: PostgreSQL CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  molecule:
+
+    name: Test PostgreSQL avec Molecule
+
+    runs-on:
+      - self-hosted
+      - Linux
+      - X64
+
+    steps:
+
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Créer le virtualenv
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+
+      - name: Installer Ansible et Molecule
+        run: |
+          .venv/bin/pip install \
+            ansible-core \
+            molecule \
+            "molecule-plugins[docker]" \
+            docker \
+            ansible-lint \
+            yamllint
+
+      - name: Vérifier Docker
+        run: |
+          docker version
+
+      - name: Tester le rôle PostgreSQL
+        working-directory: roles/postgresql
+        run: |
+          ../../../.venv/bin/molecule test
