@@ -1,0 +1,24 @@
+---
+- name: Installer PostgreSQL
+  ansible.builtin.apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+    state: present
+    update_cache: true
+
+- name: Activer et démarrer PostgreSQL
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Vérifier la version PostgreSQL
+  ansible.builtin.command:
+    cmd: psql --version
+  register: postgresql_version
+  changed_when: false
+
+- name: Afficher la version PostgreSQL
+  ansible.builtin.debug:
+    var: postgresql_version.stdout

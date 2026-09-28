@@ -1,0 +1,43 @@
+---
+# Purpose: assert that the instance really ended up in the expected state.
+# Molecule calls this playbook with `molecule verify`.
+#- name: Verify
+#  hosts: instance
+#  gather_facts: false # Quicker, if you do not need facts
+#  tasks:
+#    - name: Assert something
+#      ansible.builtin.assert:
+#        that: true
+#---
+- name: Vérification PostgreSQL
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Vérifier que PostgreSQL est actif
+      ansible.builtin.command:
+        cmd: systemctl is-active postgresql
+      register: postgres_status
+      changed_when: false
+
+    - name: Vérifier le statut
+      ansible.builtin.assert:
+        that:
+          - postgres_status.stdout == "active"
+
+    - name: Vérifier psql
+      ansible.builtin.command:
+        cmd: psql --version
+      register: psql_version
+      changed_when: false
+
+    - name: Afficher la version
+      ansible.builtin.debug:
+        var: psql_version.stdout
+
+    - name: Vérifier le port 5432
+      ansible.builtin.shell:
+        cmd: ss -lnt | grep ':5432'
+      changed_when: false
