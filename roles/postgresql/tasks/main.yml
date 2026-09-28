@@ -8,10 +8,11 @@
     update_cache: true
 
 - name: Activer et démarrer PostgreSQL
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: postgresql
     state: started
     enabled: true
+    daemon_reload: true
 
 - name: Vérifier la version PostgreSQL
   ansible.builtin.command:
